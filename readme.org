@@ -1,0 +1,115 @@
+* Test with mutations
+The following is a proof of concept that executes a test suite but replaces part
+of the system under test with a mutation, see [[https://github.com/MarkRedeman/ast-based-mutations][AST based mutations]].
+
+Note that [[https://github.com/padraic/humbug][Humbug]] already supports running tests with a mutation but it currently
+only supports PHPUnit (though there exists [[https://github.com/padraic/humbug/pull/145][a pullrequest]] to support phpspec).
+
+The goal of this proof of concept is to find a common interface that can be used
+for different testing frameworks.
+
+** The interface
+We should have a test runner that has a =testWithMutation(Mutation $mutation)=
+method where the =Mutation= object has at least a getter for the file that has
+been mutated and a getter for the mutated source.
+
+*** Performance optimizations
+When doing mutation testing it is common to not run all the tests. Instead we
+use code coverage to find all the test that cover the given mutation and only
+run those tests.
+This requires that the =Mutation= object also contains the starting and ending
+line of the original code that has been mutated. Moreover we will also need some
+way to read the code coverage data.
+
+For now I won't use these types of performance optimizations as it requires
+better understanding of code coverage formats.
+
+*** Different implementations
+Since one of the goals is to add support for multiple testing frameworks we will
+require multiple implementations.
+
+*** Bootstrap file
+Both PHPUnit and PHPSpec support choosing a bootstrap file.
+
+** Examples
+
+*** PHPUnit
+
+To run the example unit tests from the root of this project run,
+#+BEGIN_SRC sh
+phpx examples/demo-phpunit/vendor/bin/phpunit -c examples/demo-phpunit/phpunit.xml
+
+# Use a different bootstrap file
+phpx examples/demo-phpunit/vendor/bin/phpunit -c examples/demo-phpunit/phpunit.xml --bootstrap examples/bootstrap_mutation.php
+#+END_SRC
+
+#+BEGIN_SRC sh
+cat examples/cell_mutation.php \
+                               |  phpx examples/demo-phpunit/vendor/bin/phpunit \
+                               --configuration examples/demo-phpunit/phpunit.xml \
+                               --bootstrap examples/bootstrap_mutation.php
+#+END_SRC
+
+**** ☛ TODO Only run specific tests
+To improve the performance of the mutations tests we only want to run tests that
+cover a mutation.
+
+Humbug uses an [[https://github.com/padraic/phpunit-extensions][extension]], however this requires changing the phpunit yaml file.
+
+One idea I have is having a pluging similar to [[https://github.com/fiunchinho/phpunit-randomizer][PHPUnit Randomizer]] which uses an
+additional command line argument.
+
+*** PHPSpec
+To run the example specs from the root of this project run,
+#+BEGIN_SRC sh
+phpx examples/demo-phpunit/vendor/bin/phpspec run -c examples/demo-phpunit/phpspec.yml
+
+# Use a different bootstrap file
+phpx examples/demo-phpunit/vendor/bin/phpspec run -c examples/demo-phpunit/phpspec.yml --bootstrap examples/bootstrap_mutation.php
+#+END_SRC
+
+#+BEGIN_SRC sh
+cat examples/cell_mutation.php | \
+                               phpx examples/demo-phpunit/vendor/bin/phpspec run \
+                               -c examples/demo-phpunit/phpspec.yml \
+                              --bootstrap examples/bootstrap_mutation.php
+#+END_SRC
+
+
+* Interfaces
+
+#+BEGIN_SRC php
+interface MutationTester
+{
+    public function test(Mutation $mutation, Test[] $tests) : TestResults;
+}
+
+final class DefaultMutationTester implements MutationTester
+{
+    public function test(Mutation $mutation, Test[] $tests) : TestResults
+    {
+    each test test mutated ast
+    }
+}
+
+$tests = $testsForMutation($mutation, $coverage);
+$tests($mutatedAST);
+
+interface Test
+{
+}
+#+END_SRC
+
+
+* Notes
+We can use startline and endlinte of a mutation's original node to collect
+covering tests
+
+Class names and such that may be use full to use
+
+TestResult
+NeutralMutation
+EvilMutation
+
+* Look into patchwork
+http://patchwork2.org/

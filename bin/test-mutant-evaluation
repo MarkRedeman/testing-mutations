@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+
+$toEvaluate = <<<DATUM
+<?php
+
+declare(strict_types=1);
+
+echo 'Hello world';
+
+DATUM;
+
+eval('?>' . $toEvaluate);
