@@ -26,20 +26,7 @@ class MutationTestingTest extends TestCase
     private $done = 0;
 
     // formularium, phpspec
-    const PROJECT_PATH = '/../examples/formularium/';
-
-    const PHPUNIT = [
-        'vendor/bin/phpunit',
-        '--bootstrap ../bootstrap_mutation.php',
-        '--testsuite "Unit"',
-        '--stop-on-failure'
-    ];
-
-    const PHPSPEC = [
-        'vendor/bin/phpspec run',
-        '--bootstrap ../bootstrap_mutation.php',
-        '--stop-on-failure'
-    ];
+    const PROJECT_PATH = '/../examples/demo-phpunit/';
 
     /** @test */
     function it_mutates_all_our_source_files()
@@ -47,9 +34,10 @@ class MutationTestingTest extends TestCase
         $context = new ApplicationContext(new Environment([], [
             'project-path' => self::PROJECT_PATH
         ], [
+            // 'test-framework-executable' => 'vendor/bin/phpspec run',
             'test-framework-executable' => 'vendor/bin/phpunit',
-            'test-framework-bootstrap' => 'formularium/bootstrap/autoload.php',
-            'test-framework-options' => ['--stop-on-failure', '--testsuite "Unit"']
+            'test-framework-bootstrap' => 'bootstrap/autoload.php',
+            'test-framework-options' => ['--stop-on-failure']
         ]));
 
         $tester = new MutationTester($context);
@@ -67,11 +55,10 @@ class MutationTestingTest extends TestCase
                 if ($result->process->isSuccessful()) {
                     $this->fails += 1;
                     echo "${current} : Escaped\n";
-                    echo $result->process->getOutput() . "\n";
                 } else {
                     echo "${current} : Killed\n";
-                    echo $result->process->getOutput() . "\n";
                 }
+                echo $result->process->getOutput() . "\n";
             });
         }
 
@@ -101,7 +88,7 @@ class MutationTestingTest extends TestCase
             \RecursiveRegexIterator::GET_MATCH
         );
 
-        return $files;
+        return new \LimitIterator($files, 0, 10);
     }
 }
 
@@ -135,30 +122,24 @@ final class MutationTester
 
         // Todo setpu bootstrap file
         // we probably want to do this in preperation phase
-        $bootstrap = $projectPath . $config['test-framework-bootstrap'];
+        $bootstrap = $projectPath . '/' . $config['test-framework-bootstrap'];
 
         $this->bootstrapFile = tmpfile();
         fwrite($this->bootstrapFile, $this->renderBootstrapFile($bootstrap));
-        var_dump(stream_get_meta_data($this->bootstrapFile));
         $path = stream_get_meta_data($this->bootstrapFile)['uri'];
         $this->boot = $path;
-        var_dump($path);
 
-
-        // $path = $bootstrap;
         $command = implode(
             ' ',
             array_merge(
                 [$config['test-framework-executable']],
-                $config['test-framework-options'],
-                ["--bootstrap formularium/bootstrap/autoload.php"]
+                ["--bootstrap ${path}"],
+                $config['test-framework-options']
             )
         );
 
-        var_dump($command);
         $this->command = $command;
         $this->projectPath = $projectPath;
-
     }
 
     // Instead of having this function create the process we might as well have an object
@@ -172,22 +153,17 @@ final class MutationTester
             $env = [],
             $this->printAst($ast)
         );
-        $process->start();
+        $process->run();
 
-        var_dump($process->getOutput());
-
-        // var_dump(file_get_contents($this->boot));
         return new TestResult($process, $process->isSuccessful(), $process->getOutput());
     }
 
     private function renderBootstrapFile($bootstrap) : string
     {
         return <<<EOT
-#!/usr/bin/env php
 <?php
 
-require_once $bootstrap;
-
+require_once "$bootstrap";
 
 eval('?>' . file_get_contents('php://stdin'));
 EOT;

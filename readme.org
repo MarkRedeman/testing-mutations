@@ -113,3 +113,29 @@ EvilMutation
 
 * Look into patchwork
 http://patchwork2.org/
+
+** Messaging with patchwork
+
+A messaging system such as RabbitMQ could be used to send mutations to workers
+similarly to [[https://github.com/sixty-north/cosmic-ray][Cosmic Ray]].
+Since patchwork allows us to do monkey patching we could reuse workers instead
+of starting a new worker everytime we want to test a mutation.
+
+* Research
+
+Neutral vs Evil mutations
+Orthogonal vs ... mutations
+
+** Test Mutation Testers
+
+For each Mutation Tester I should have at least the following tests:
+
+- Given a NOOP mutation the tester should pass
+- Given a mutation that breaks the tests the tester should fail
+
+Since we will have multiple testers / test runners determining whether a
+mutation has been killed or escaped should not be the responsibility of the
+runner. It should only run the tests and return the result.
+
+
+The goal of a mutation testing tool is not only to improve your testsuite but also to improve the system under test. So whenever Humbug encounters code that is difficult to test then that could mean that that code could be improved.
