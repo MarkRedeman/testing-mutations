@@ -30,18 +30,22 @@
             new Renamed\Application\ApplicationContext(
                 new Renamed\Application\Environment(
                     [],
-                    ['cwd' => getcwd()],
+                    [
+                        'cwd' => getcwd()
+                        'project-path' => '/../examples/formularium/'
+                    ],
                     // (new Renamed\Application\ConfigurationLoader())(getcwd())
                     [
                         'extensions' => [],
                         'test-framework' => 'phpunit',
                         'test-framework-executable' => 'vendor/bin/phpunit',
-                        'test-framework-bootstrap' => '',
-                        'test-framework-options' => ['--stop-on-failure']
+                        'test-framework-bootstrap' => 'bootstrap/autoload.php',
+                        'test-framework-options' => ['--stop-on-failure', '--testsuite "Unit"']
                     ]
                 )
             )
         )
     );
     $app->run();
+
 })('0.0.1');

@@ -9,8 +9,42 @@ namespace Renamed\Applicaiton;
  */
 final class WhiteWolf
 {
+    private $context;
+
+    public function __construct(Context $context)
+    {
+        $this->context = $context;
+    }
+
     public function run()
     {
+        // From context?
+        $mutate = new MutateSourceCode(...$context->operators());
+        $tester = new MutationTester($context);
+        $files = $this->sourceFiles($context);
+        $emitter = $this->context->emitter();
+
+        // Instead of having an emitter here, we could have
+        // decorated MutationTesters and MutateSourceCode classes
+        // that do the emitting
+
+        foreach($files as $name => $object) {
+            $source = file_get_contents($name);
+
+
+            $mutate->mutate($source, function (Mutation $mutation, array $ast) use ($tester) {
+                $emitter->emit(MutationFound::class);
+                // Mutation applied
+                $result = $tester->testMutation($mutation, $ast);
+
+                // Mutation tested
+                $emitter->emit(MutationTested::class);
+            });
+
+            $emitter->emit(MutationsOnFileWereCompleted::class)
+        }
+
+        return;
         $pipeline = new Pipeline;
 
         $locateSourceFiles = function(array $targetDirs, Closure $then) {
@@ -37,6 +71,32 @@ final class WhiteWolf
             ->pipe($applyMutation)
             ->pipe($testMutations)
             ->run();
+    }
+
+    private function sourceFiles(Context $context) : \Iterator
+    {
+        $config = $context->config();
+
+        $append = new \AppendIterator;
+
+        foreach (['src'] as $path) {
+            $append->append(
+                new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator(
+                        realpath(__DIR__ . $config['project-path']. $path)
+                    ),
+                    \RecursiveIteratorIterator::SELF_FIRST
+                )
+            );
+        }
+
+        $files = new \RegexIterator(
+            $append,
+            '/^.+\.php$/i',
+            \RecursiveRegexIterator::GET_MATCH
+        );
+
+        return $files;
     }
 }
 

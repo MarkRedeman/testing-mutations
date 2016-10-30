@@ -9,7 +9,7 @@ final class Console
     private $context;
 
     // ConsoleContext
-    public function __construct(Context $context)
+    public function __construct(ConsoleContext $context)
     {
         $this->context = $context;
         $this->subscribe($this->context->eventEmitter());

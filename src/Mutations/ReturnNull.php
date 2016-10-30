@@ -15,6 +15,8 @@ final class ReturnNull implements MutationOperator
      */
     public function mutate(Node $node)
     {
+        // unless current body should not return null ...
+
         if (! $node instanceof Node\Stmt\Return_) {
             return;
         }

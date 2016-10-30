@@ -1,3 +1,6 @@
+Coupled code get painful when change happens.
+Decoupled code was wasted effort when change doesn't happen.
+
 * Test with mutations
 The following is a proof of concept that executes a test suite but replaces part
 of the system under test with a mutation, see [[https://github.com/MarkRedeman/ast-based-mutations][AST based mutations]].
@@ -139,3 +142,61 @@ runner. It should only run the tests and return the result.
 
 
 The goal of a mutation testing tool is not only to improve your testsuite but also to improve the system under test. So whenever Humbug encounters code that is difficult to test then that could mean that that code could be improved.
+
+** Extensions
+
+http://pitest.org/quickstart/advanced/
+
+*** Mutation Result Listener
+
+*** Mutation Filter
+
+Pitest passes all mutations of a file to filters and only starts testing the
+mutations after they've gone through a filter.
+
+Passing mutations per file may also benefit output stuff.
+
+*** Test Prioritiser
+
+Instead of having a specific test prioritiser inside our core application we may
+instead use extensions of the current test framework.
+For instance we could have a PHPUnit extension that adds a listener that decides
+which tests will be run (similar to
+https://github.com/padraic/phpunit-extensions).
+
+This extension could use code coverage data to determine which tests to run.
+
+Note: this might bring troubles when we are dealing with neutral (NOOP)
+mutations that do not change a specific file).
+
+We can use environment variables to pass the file and its lines that were
+changed.
+
+*** Test Frameworks
+
+
+* Performance
+I want to do some performance benchmarks. Specifically I want to know how long
+the seperate phases (finding files, mutation generation, applying, testing,
+analyzing) take.
+
+To do this it would be nice to have wrappers (MONADS!)
+
+
+** Git --since option
+
+** Incremental Analysis
+
+** Concurrent Worker
+
+We may be able to have multiple php processes that actively test for mutations.
+We could use a queue system [[https://github.com/sixty-north/cosmic-ray][like cosmic ray]] for the communication between the
+systems.
+
+One of the downsides of having a concurrent process that stays alive after a
+mutation has been dealt with is that normally we aren't able to redefine method
+bodies in PHP.
+However this might be solved with patchwork, though this could cost us
+additional performance.
+
+** Parallelization

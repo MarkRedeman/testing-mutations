@@ -25,57 +25,116 @@ class MutationTestingTest extends TestCase
     private $processes = [];
     private $done = 0;
 
-    // formularium, phpspec
-    const PROJECT_PATH = '/../examples/demo-phpunit/';
-
     /** @test */
     function it_mutates_all_our_source_files()
     {
-        $context = new ApplicationContext(new Environment([], [
-            'project-path' => self::PROJECT_PATH
-        ], [
-            // 'test-framework-executable' => 'vendor/bin/phpspec run',
-            'test-framework-executable' => 'vendor/bin/phpunit',
-            'test-framework-bootstrap' => 'bootstrap/autoload.php',
-            'test-framework-options' => ['--stop-on-failure']
-        ]));
+        $context = new ApplicationContext(
+            new Environment(
+                [],
+                [
+                    // formularium, phpspec
+                    'project-path' =>  '/../examples/demo-phpunit/'
+                    // 'project-path' =>  '/../examples/Core/'
+                    // 'project-path' =>  '/../examples/formularium/'
+                    // 'project-path' =>  '/../examples/phpspec/'
+                ], [
+                    'test-framework-executable' => 'vendor/bin/phpspec run',
+                    // 'test-framework-executable' => 'bin/phpspec run',
+                    // 'test-framework-executable' => 'vendor/bin/phpunit',
+                    // 'test-framework-bootstrap' => 'bootstrap/autoload.php',
+                    'test-framework-bootstrap' => 'vendor/autoload.php',
+                    'test-framework-options' => [
+                        '--stop-on-failure',
+                        // '--format=dot',
+                        // '--testsuite "Unit"'
+                    ],
+                    'target-directories' => [
+                        'src'
+                        // 'Accessor',
+                        // 'Context',
+                        // 'Currency',
+                        // 'Dashboard',
+                        // 'Distributor',
+                        // 'Exception',
+                        // 'Factory',
+                        // 'Formatter',
+                        // 'Metadata',
+                        // 'Model',
+                        // 'OrderProcessing',
+                        // 'Payment',
+                        // 'Pricing',
+                        // 'Promotion',
+                        // 'Provider',
+                        // 'Remover',
+                        // 'Repository',
+                        // 'Resolver',
+                        // 'Taxation',
+                        // 'Test',
+                        // 'Uploader'
+                    ],
+                    'test-frameworks' => [
+                        'phpunit' => [
+                            'executable' => 'vendor/bin/phpunit',
+                            'bootstrap' => 'vendor/autoload.php',
+                            'options' => [
+                                '--stop-on-failure'
+                            ]
+                        ],
+                        'phpspec' => [
+                            'executable' => 'bin/phpspec',
+                            'bootstrap' => 'vendor/autoload.php',
+                            'options' => [
+                                '--stop-on-failure'
+                            ]
+                        ],
+                        'behat' => [
+                            'executable' => 'vendor/bin/behat',
+                            'bootstrap' => 'vendor/autoload.php',
+                            'options' => [
+                                '--stop-on-failure'
+                            ]
+                        ]
+                    ]
+                ]
+            )
+        );
 
         $tester = new MutationTester($context);
-        $files = $this->sourceFiles();
+        $files = $this->sourceFiles($context);
 
         foreach($files as $name => $object) {
             $source = file_get_contents($name);
 
             $mutate = new MutateSourceCode(...$context->operators());
-            $mutate->mutate($source, function (Mutation $mutation, array $ast) use ($tester) {
-                $result = $tester->testMutation($mutation, $ast);
+            $mutate->mutate($source, function (Mutation $mutation, array $ast) use ($tester, $name) {
+                $result = $tester->testMutation($mutation, $ast, $name);
 
-                $current = $this->runs;
-                $this->runs += 1;
+                echo $this->runs;
                 if ($result->process->isSuccessful()) {
                     $this->fails += 1;
-                    echo "${current} : Escaped\n";
+                    echo " : Escaped\n";
                 } else {
-                    echo "${current} : Killed\n";
+                    echo " : Killed\n";
                 }
                 echo $result->process->getOutput() . "\n";
+                $this->runs += 1;
             });
         }
 
-        echo "Total: " . count($this->results) . "\n";
-        echo "Done: " . $this->done . "\n";
         echo "We've had: " . $this->runs . "mutations of which " . $this->fails . " escaped.\n";
     }
 
-    private function sourceFiles() : \Iterator
+    private function sourceFiles(Context $context) : \Iterator
     {
+        $config = $context->config();
+
         $append = new \AppendIterator;
 
-        foreach (['src'] as $path) {
+        foreach ($config['target-directories'] as $path) {
             $append->append(
                 new \RecursiveIteratorIterator(
                     new \RecursiveDirectoryIterator(
-                        realpath(__DIR__ . self::PROJECT_PATH . $path)
+                        realpath(__DIR__ . $config['project-path']. $path)
                     ),
                     \RecursiveIteratorIterator::SELF_FIRST
                 )
@@ -88,7 +147,7 @@ class MutationTestingTest extends TestCase
             \RecursiveRegexIterator::GET_MATCH
         );
 
-        return new \LimitIterator($files, 0, 10);
+        return $files;
     }
 }
 
@@ -112,7 +171,6 @@ final class MutationTester
     private $command;
     private $projectPath;
     private $bootstrapFile;
-    public $boot;
 
     public function __construct(Context $context)
     {
@@ -124,10 +182,10 @@ final class MutationTester
         // we probably want to do this in preperation phase
         $bootstrap = $projectPath . '/' . $config['test-framework-bootstrap'];
 
+        // Use a custom bootstrap file saved at a temporary location
         $this->bootstrapFile = tmpfile();
         fwrite($this->bootstrapFile, $this->renderBootstrapFile($bootstrap));
         $path = stream_get_meta_data($this->bootstrapFile)['uri'];
-        $this->boot = $path;
 
         $command = implode(
             ' ',
@@ -144,13 +202,21 @@ final class MutationTester
 
     // Instead of having this function create the process we might as well have an object
     // that only returns the command, path, env and StdIn
-    public function testMutation(Mutation $mutation, array $ast) : TestResult
+    public function testMutation(Mutation $mutation, array $ast, string $name) : TestResult
     {
         // Pass the mutated code to STDIN, run and wait for result
+        // Thought: adding environment variables containing the file that is being mutated
+        // with its starting and ending line could make it possible for external extensions
+        // (that is PHPUnit or PhpSpec extensions) to filter out certain tests
         $process = new Process(
             $this->command,
             $this->projectPath,
-            $env = [],
+            $env = [
+                'mutation-file' => $name,
+                'mutation-star-lLine' => $mutation->original()->getAttributes()['startLine'],
+                'mutation-end-line' => $mutation->original()->getAttributes()['endLine'],
+                'mutation-tests' => ''
+            ],
             $this->printAst($ast)
         );
         $process->run();
@@ -158,7 +224,7 @@ final class MutationTester
         return new TestResult($process, $process->isSuccessful(), $process->getOutput());
     }
 
-    private function renderBootstrapFile($bootstrap) : string
+    private function renderBootstrapFile(string $bootstrap) : string
     {
         return <<<EOT
 <?php
