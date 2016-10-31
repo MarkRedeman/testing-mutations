@@ -25,27 +25,81 @@
     }
 
     // I'm trying to make each part of the application purely unit testable
-    $app = new Renamed\Application\Console(
-        new Renaemd\Application\ConsoleContext(
-            new Renamed\Application\ApplicationContext(
-                new Renamed\Application\Environment(
-                    [],
-                    [
-                        'cwd' => getcwd()
-                        'project-path' => '/../examples/formularium/'
+    // $app = new Renamed\Application\Console(
+    //     new Renaemd\Application\ConsoleContext(
+    $app = new Renamed\Application\Application(
+        new Renamed\Application\ApplicationContext(
+            new Renamed\Application\Environment(
+                [],
+                [
+                    // formularium, phpspec
+                    'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/demo-phpunit/',
+                    // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/phpspec/',
+                    // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/Core/'
+                    // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/formularium/'
+                ], [
+                    // 'test-framework-executable' => 'vendor/bin/phpspec run',
+                    // 'test-framework-executable' => 'bin/phpspec run',
+                    'test-framework-executable' => 'vendor/bin/phpunit',
+                    'test-framework-bootstrap' => 'bootstrap/autoload.php',
+                    // 'test-framework-bootstrap' => 'vendor/autoload.php',
+                    'test-framework-options' => [
+                        '--stop-on-failure',
+                        // '--format=dot',
+                        '--testsuite "Unit"'
                     ],
-                    // (new Renamed\Application\ConfigurationLoader())(getcwd())
-                    [
-                        'extensions' => [],
-                        'test-framework' => 'phpunit',
-                        'test-framework-executable' => 'vendor/bin/phpunit',
-                        'test-framework-bootstrap' => 'bootstrap/autoload.php',
-                        'test-framework-options' => ['--stop-on-failure', '--testsuite "Unit"']
+                    'target-directories' => [
+                        'src'
+                        // 'Accessor',
+                        // 'Context',
+                        // 'Currency',
+                        // 'Dashboard',
+                        // 'Distributor',
+                        // 'Exception',
+                        // 'Factory',
+                        // 'Formatter',
+                        // 'Metadata',
+                        // 'Model',
+                        // 'OrderProcessing',
+                        // 'Payment',
+                        // 'Pricing',
+                        // 'Promotion',
+                        // 'Provider',
+                        // 'Remover',
+                        // 'Repository',
+                        // 'Resolver',
+                        // 'Taxation',
+                        // 'Test',
+                        // 'Uploader'
+                    ],
+                    'test-frameworks' => [
+                        'phpunit' => [
+                            'executable' => 'vendor/bin/phpunit',
+                            'bootstrap' => 'vendor/autoload.php',
+                            'options' => [
+                                '--stop-on-failure'
+                            ]
+                        ],
+                        'phpspec' => [
+                            'executable' => 'bin/phpspec',
+                            'bootstrap' => 'vendor/autoload.php',
+                            'options' => [
+                                '--stop-on-failure'
+                            ]
+                        ],
+                        'behat' => [
+                            'executable' => 'vendor/bin/behat',
+                            'bootstrap' => 'vendor/autoload.php',
+                            'options' => [
+                                '--stop-on-failure'
+                            ]
+                        ]
                     ]
-                )
+                ]
             )
-        )
-    );
+            )
+            // )
+        );
     $app->run();
 
 })('0.0.1');
