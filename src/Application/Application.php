@@ -28,10 +28,25 @@ final class Application
     public function __construct(Context $context)
     {
         $this->context = $context;
+        $this->scoreboard = new \NyanCat\Scoreboard(
+            new \NyanCat\Cat(),
+            new \NyanCat\Rainbow(
+                \Fab\Factory::getFab(
+                    empty($_SERVER['TERM']) ? 'unknown' : $_SERVER['TERM']
+                )
+            ),
+            [
+                new \NyanCat\Team('killed', 'green', '^'),
+                new \NyanCat\Team('escaped', 'red', 'o'),
+            ],
+            5
+            // callable
+        );
     }
 
     public function run()
     {
+        \Renamed\Performance::start();
         // From context?
         $mutate = new MutateSourceCode(...$this->context->operators());
         $tester = new MutationTester($this->context);
@@ -43,25 +58,29 @@ final class Application
         // Instead of having an emitter here, we could have
         // decorated MutationTesters and MutateSourceCode classes
         // that do the emitting
+        $this->scoreboard->start();
 
-        echo "Total files: " . count($files) . ".\n";
+        // echo "Total files: " . count($files) . ".\n";
         foreach($files as $name => $object) {
             $source = file_get_contents($name);
 
-            echo "Start mutating file: [${name}]\n";
+            $relName = substr($name, strlen($config['project-path']));
+            // echo "Mutating file: [${relName}]\n";
 
             $mutate->mutate($source, function (Mutation $mutation, array $ast) use ($tester, $name) {
+
+                // Filter mutation
 
 
                 // $emitter->emit(MutationFound::class);
                 // Mutation applied
                 $result = $tester->testMutation($mutation, $ast, $name);
-                echo $this->runs;
+
                 if ($result->process->isSuccessful()) {
                     $this->fails += 1;
-                    echo " : Escaped\n";
+                    $this->scoreboard->score('escaped');
                 } else {
-                    echo " : Killed\n";
+                    $this->scoreboard->score('killed');
                 }
                 // echo $result->process->getOutput() . "\n";
                 $this->runs += 1;
@@ -72,6 +91,13 @@ final class Application
 
             // $emitter->emit(MutationsOnFileWereCompleted::class);
         }
+
+        $this->scoreboard->stop();
+        echo "We've had: " . $this->runs . " mutations of which " . $this->fails . " escaped.\n";
+
+        \Renamed\Performance::stop();
+        echo "Time: " . \Renamed\Performance::getTimeString() . "\n"; // 36640
+        echo "Memory: " . \Renamed\Performance::getMemoryUsageString() . "\n"; // 36640
 
         return;
     }

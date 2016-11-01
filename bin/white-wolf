@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-(function ($version) {
+(function ($version, $arguments) {
 
     // Nicely copied from PHPSpec's executable
 
@@ -30,13 +30,14 @@
     $app = new Renamed\Application\Application(
         new Renamed\Application\ApplicationContext(
             new Renamed\Application\Environment(
-                [],
+                $arguments,
                 [
                     // formularium, phpspec
-                    'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/demo-phpunit/',
+                    // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/demo-phpunit/',
                     // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/phpspec/',
                     // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/Core/'
                     // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/formularium/'
+                    'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/ProfessorFrancken/'
                 ], [
                     // 'test-framework-executable' => 'vendor/bin/phpspec run',
                     // 'test-framework-executable' => 'bin/phpspec run',
@@ -102,4 +103,4 @@
         );
     $app->run();
 
-})('0.0.1');
+})('0.0.1', $argv);
