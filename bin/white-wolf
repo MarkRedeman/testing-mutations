@@ -33,12 +33,15 @@
                 $arguments,
                 [
                     // formularium, phpspec
-                    // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/demo-phpunit/',
+                    'cwd' => getcwd(),
+                    'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/demo-phpunit/',
                     // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/phpspec/',
                     // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/Core/'
                     // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/formularium/'
-                    'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/ProfessorFrancken/'
-                ], [
+                    // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/ProfessorFrancken/'
+                ],
+                // (new Renamed\Application\ConfigurationLoader())(getcwd())
+                [
                     // 'test-framework-executable' => 'vendor/bin/phpspec run',
                     // 'test-framework-executable' => 'bin/phpspec run',
                     'test-framework-executable' => 'vendor/bin/phpunit',
@@ -47,7 +50,7 @@
                     'test-framework-options' => [
                         '--stop-on-failure',
                         // '--format=dot',
-                        '--testsuite "Unit"'
+                        // '--testsuite "Unit"'
                     ],
                     'target-directories' => [
                         'src'

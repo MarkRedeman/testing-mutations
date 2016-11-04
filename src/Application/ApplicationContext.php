@@ -44,7 +44,7 @@ final class ApplicationContext implements Context, Extendable
     public function operators() : array
     {
         $default = [
-                // new Mutations\BinaryOperatorReplacement,
+                new Mutations\BinaryOperatorReplacement,
                 new Mutations\DateTimeFromFormat,
                 new Mutations\ReturnNull,
                 new Mutations\Arithmetic\Addition,

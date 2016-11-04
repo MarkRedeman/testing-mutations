@@ -6,6 +6,13 @@ namespace Renamed;
 
 use PhpParser\Node;
 
+/**
+ * The mutation should possibly contain more information such as
+ * the location of the file and the location of the mutation within
+ * that file.
+ * It could also contain the operator name that was used so that we
+ * can determine whether the mutation was Evil or Neutral.
+ */
 final class Mutation
 {
     /**

@@ -10,5 +10,11 @@ namespace Renamed\TestingStrategies\TestResults;
 // TestResult -> { PHPUnitTestResult, PHPSpecTestResult }
 final class TestResult
 {
+    public function mutation() : Node;
+    public function original() : Node;
+    public function filename() : string;
 
+    public function output() : string;
+    public function errorOutput() : string;
+    public function state() : MutationState;
 }

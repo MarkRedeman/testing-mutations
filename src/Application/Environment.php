@@ -12,6 +12,7 @@ final class Environment
 
     public function __construct(array $inputs, array $env, array $config)
     {
+        var_dump($env);
         $this->inputs = $inputs;
         $this->env = $env;
         $this->config = $config;
