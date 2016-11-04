@@ -26,7 +26,6 @@ abstract class Extension implements Context
     abstract public function name() : string;
 }
 
-
 // final class MemoizeContext implements Context
 // {
 //     //
@@ -34,7 +33,6 @@ abstract class Extension implements Context
 
 final class CodeCoverageContext
 {
-
 }
 
 interface TestOrchestratorContext

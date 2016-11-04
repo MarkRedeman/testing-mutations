@@ -19,11 +19,9 @@ final class ConsoleContext
     // interface =)
     public function formatMutation() : Closure
     {
-
     }
 
     public function applicationContext() : Context
     {
-
     }
 }

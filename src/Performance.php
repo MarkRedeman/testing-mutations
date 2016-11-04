@@ -3,7 +3,6 @@
  * Humbug
  *
  * @category   Humbug
- * @package    Humbug
  * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
  * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
  */
@@ -12,7 +11,6 @@ namespace Renamed;
 
 class Performance
 {
-
     protected static $startTime;
 
     protected static $endTime;
@@ -41,7 +39,7 @@ class Performance
         $horizons = [
             'hour'   => 3600000,
             'minute' => 60000,
-            'second' => 1000
+            'second' => 1000,
         ];
         $milliseconds = round(self::getTime() * 1000);
         foreach ($horizons as $unit => $value) {

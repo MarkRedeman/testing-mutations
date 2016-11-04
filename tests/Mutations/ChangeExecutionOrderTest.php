@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace Renamed;
 
 use Renamed\Tests\MutationOperatorTest as TestCase;
-use Renamed\MutationOperator;
 
 class ChangeExecutionOrderTest extends TestCase
 {
     protected function operator() : MutationOperator
     {
-        return new ChangeExecutionOrder;
+        return new ChangeExecutionOrder();
     }
 
     /** @test */
-    function it_changes_the_order_of_two_statements()
+    public function it_changes_the_order_of_two_statements()
     {
         $source = <<<SOURCE
 function hello() {
@@ -35,18 +34,15 @@ MUTATION;
     }
 
     /** @test */
-    function it_ignores_single_statements()
+    public function it_ignores_single_statements()
     {
-
     }
-
 }
 
 use PhpParser\Node;
 
 final class ChangeExecutionOrder implements MutationOperator
 {
-
     /**
      * @param Node $node
      */

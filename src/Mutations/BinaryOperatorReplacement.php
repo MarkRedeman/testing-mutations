@@ -37,7 +37,7 @@ final class BinaryOperatorReplacement implements MutationOperator
         BinaryOp\ShiftRight::class,
         BinaryOp\Smaller::class,
         BinaryOp\SmallerOrEqual::class,
-        BinaryOp\Spaceship::class
+        BinaryOp\Spaceship::class,
     ];
 
     /**
@@ -57,7 +57,7 @@ final class BinaryOperatorReplacement implements MutationOperator
         // Don't include the original binary operator in the mutations
         $operators = array_filter(
             $this->replacements,
-            function($operator) use ($name) {
+            function ($operator) use ($name) {
                 return $name !== $operator;
             }
         );

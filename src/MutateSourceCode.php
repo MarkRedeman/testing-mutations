@@ -7,7 +7,6 @@ namespace Renamed;
 use Closure;
 use PhpParser\Lexer;
 use PhpParser\ParserFactory;
-use Renamed\Mutations\Multiplication;
 
 final class MutateSourceCode
 {
@@ -51,7 +50,7 @@ final class MutateSourceCode
     private function generateASTFromCode(string $source) : array
     {
         $lexer = new Lexer(['usedAttributes' => ['startLine', 'endLine']]);
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7, $lexer);
         // Remove strict type info
         return $parser->parse($source);
     }

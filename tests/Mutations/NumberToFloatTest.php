@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Renamed;
 
-use Renamed\MutationOperator;
 use Renamed\Tests\MutationOperatorTest as TestCase;
 
 class NumberToFloatTest extends TestCase
 {
     protected function operator() : MutationOperator
     {
-        return new IntToFloat;
+        return new IntToFloat();
     }
 
     /** @test */
-    function it_uses_a_more_specific_type()
+    public function it_uses_a_more_specific_type()
     {
         $source = '$f = function(int $int) {};';
         $mutation = '$f = function(float $int) {};';
@@ -37,7 +36,7 @@ class NumberToFloatTest extends TestCase
     }
 
     /** @test */
-    function it_only_mutates_integer_parameters()
+    public function it_only_mutates_integer_parameters()
     {
         $node = new \PhpParser\Node\Param(
             'number',
@@ -53,12 +52,10 @@ class NumberToFloatTest extends TestCase
             ),
             $this->operator()->mutate($node)->current()
         );
-
     }
 
-
     /** @test */
-    function it_only_mutates_parameters()
+    public function it_only_mutates_parameters()
     {
         $this->doesNotMutate("echo 'hello';");
     }

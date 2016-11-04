@@ -12,7 +12,6 @@ final class TestResult
     private $isSuccessful;
     private $output;
 
-
     public function __construct(Process $process, bool $isSuccessful, string $output)
     {
         $this->process = $process;
@@ -20,7 +19,6 @@ final class TestResult
         $this->output = $output;
     }
 }
-
 
 // final class TestResult
 // {

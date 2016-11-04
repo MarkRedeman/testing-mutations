@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Renamed\Tests;
+namespace Renamed\tests;
 
 use Closure;
 use Generator;
@@ -37,7 +37,7 @@ abstract class MutationOperatorTest extends TestCase
     abstract protected function operator() : MutationOperator;
 
     /** @test */
-    function it_returns_a_generator()
+    public function it_returns_a_generator()
     {
         $node = $this->prophesize(Node::class);
         $operator = $this->operator();
@@ -68,7 +68,7 @@ abstract class MutationOperatorTest extends TestCase
             $this->findMutation($this->asAst($expected))
         );
 
-        $this->assertTrue($this->found, "The operator did not produce the expected mutation");
+        $this->assertTrue($this->found, 'The operator did not produce the expected mutation');
     }
 
     protected function doesNotMutate(string $code)
@@ -78,7 +78,7 @@ abstract class MutationOperatorTest extends TestCase
         $mutate->mutate(
             $source,
             function () {
-                $this->assertFalse(true, "Did not expect to find a mutation");
+                $this->assertFalse(true, 'Did not expect to find a mutation');
             }
         );
     }
@@ -104,14 +104,14 @@ abstract class MutationOperatorTest extends TestCase
     private function asAst($code)
     {
         $lexer = new Lexer(['usedAttributes' => ['startLine', 'endLine']]);
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
-        $ast = $parser->parse("<?php " . $code);
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7, $lexer);
+        $ast = $parser->parse('<?php ' . $code);
         return $ast;
     }
 
     private function asCode($ast)
     {
-        $printer = new Standard;
+        $printer = new Standard();
 
         if (is_array($ast)) {
             return $printer->prettyPrint($ast);

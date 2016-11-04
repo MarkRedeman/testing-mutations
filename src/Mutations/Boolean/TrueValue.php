@@ -21,7 +21,7 @@ final class TrueValue implements MutationOperator
             return;
         }
 
-        if ($node->parts !== ["false"]) {
+        if ($node->parts !== ['false']) {
             return;
         }
 

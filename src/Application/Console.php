@@ -17,11 +17,10 @@ final class Console
 
     public function run()
     {
-        $emitter = new Emmitter;
+        $emitter = new Emmitter();
         $app = new WhiteWolf($env, $emitter);
 
         $app->run();
-
     }
 
     public function status() : int
@@ -31,7 +30,7 @@ final class Console
 
     private function subscribe(EventEmitter $emitter)
     {
-        $emitter->addListener('MutationGenerated', function($event) {
+        $emitter->addListener('MutationGenerated', function ($event) {
             $this->mutationGenerated($event);
         });
     }

@@ -12,11 +12,11 @@ class FloatValueTest extends TestCase
 {
     protected function operator() : MutationOperator
     {
-        return new FloatValue;
+        return new FloatValue();
     }
 
     /** @test */
-    function it_mutates_float_values()
+    public function it_mutates_float_values()
     {
         $this->mutates('0.0;')->to('1.0;');
         $this->mutates('1.0;')->to('0.0;');
@@ -25,7 +25,7 @@ class FloatValueTest extends TestCase
     }
 
     /** @test */
-    function it_only_mutates_float_values()
+    public function it_only_mutates_float_values()
     {
         $this->doesNotMutate('$hello = "world";');
     }

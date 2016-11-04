@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Renamed\Tests;
+namespace Renamed\tests;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use PhpParser\Lexer;
@@ -17,18 +17,18 @@ use Renamed\Mutations\Multiplication;
 class CreateMutationsTest extends TestCase
 {
     /** @test */
-    function it_mutates_a_given_source_code()
+    public function it_mutates_a_given_source_code()
     {
         return;
         // $source = file_get_contents(__DIR__ . '/stubs/Email.php');
-        $source = "<?php 2 * 3 * 5;";
+        $source = '<?php 2 * 3 * 5;';
 
         $ast = $this->generateASTFromCode($source);
         var_dump($ast);
         return;
         $this->createMutations($source, function ($mutation, $ast) use (&$results) {
-            echo (new Standard)->prettyPrint($ast) . "\n";
-        }, new Multiplication);
+            echo(new Standard())->prettyPrint($ast) . "\n";
+        }, new Multiplication());
     }
 
     private function createMutations(string $source, $action, MutationOperator ...$operators)
@@ -53,7 +53,7 @@ class CreateMutationsTest extends TestCase
     private function generateASTFromCode(string $code) : array
     {
         $lexer = new Lexer(['usedAttributes' => ['startline', 'endline']]);
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7, $lexer);
         return $parser->parse($code);
     }
 }

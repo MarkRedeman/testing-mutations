@@ -4,20 +4,11 @@ declare(strict_types=1);
 
 namespace Renamed\Application;
 
-use Closure;
-use PhpParser\PrettyPrinter\Standard;
-use Renamed\Application\ApplicationContext;
-use Renamed\Application\Context;
-use Renamed\Application\Environment;
 use Renamed\MutateSourceCode;
 use Renamed\MutationTester;
-use Renamed\TestResult;
 use Renamed\Mutation;
 use Renamed\Mutations;
-use Renamed\Mutations\Multiplication;
-use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\ProcessBuilder;
 
 /**
  *
@@ -63,7 +54,7 @@ final class Application
         $this->scoreboard->start();
 
         // echo "Total files: " . count($files) . ".\n";
-        foreach($files as $name => $object) {
+        foreach ($files as $name => $object) {
             $source = file_get_contents($name);
 
             $relName = substr($name, strlen($config['project-path']));
@@ -72,7 +63,6 @@ final class Application
             $mutate->mutate($source, function (Mutation $mutation, array $ast) use ($tester, $name) {
 
                 // Filter mutation
-
 
                 // $emitter->emit(MutationFound::class);
                 // Mutation applied
@@ -95,18 +85,18 @@ final class Application
         }
 
         $this->scoreboard->stop();
-        echo "We've had: " . $this->runs . " mutations of which " . $this->fails . " escaped.\n";
+        echo "We've had: " . $this->runs . ' mutations of which ' . $this->fails . " escaped.\n";
 
         \Renamed\Performance::stop();
-        echo "Time: " . \Renamed\Performance::getTimeString() . "\n"; // 36640
-        echo "Memory: " . \Renamed\Performance::getMemoryUsageString() . "\n"; // 36640
+        echo 'Time: ' . \Renamed\Performance::getTimeString() . "\n"; // 36640
+        echo 'Memory: ' . \Renamed\Performance::getMemoryUsageString() . "\n"; // 36640
 
         return;
     }
 
     private function sourceFiles($projectPath, $targetDirectories) : \Iterator
     {
-        $append = new \AppendIterator;
+        $append = new \AppendIterator();
 
         foreach ($targetDirectories as $path) {
             $append->append(

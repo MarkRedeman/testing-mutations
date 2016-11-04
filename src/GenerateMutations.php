@@ -9,8 +9,6 @@ use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\NodeVisitor;
-use Renamed\MutationOperator;
-use Renamed\Mutation;
 
 final class GenerateMutations
 {
@@ -27,7 +25,7 @@ final class GenerateMutations
     {
         // Next we pass the generator to a NodeTraverser so that it is called
         // for each node in the AST
-        $this->traverser = new NodeTraverser;
+        $this->traverser = new NodeTraverser();
         $this->traverser->addVisitor(
             $this->visitor($generated, ...$operators)
         );
@@ -52,7 +50,6 @@ final class GenerateMutations
     private function visitor(Closure $generated, MutationOperator ...$operators) : NodeVisitor
     {
         return new class($generated, ...$operators) extends NodeVisitorAbstract {
-
             private $generated;
             private $operators;
 
@@ -66,14 +63,14 @@ final class GenerateMutations
              * Generate a mutation when leaving a node in the AST
              * @param Node $node AST node
              */
-            public function leaveNode(Node $node) {
+            public function leaveNode(Node $node)
+            {
                 foreach ($this->operators as $operator) {
                     foreach ($operator->mutate($node) as $mutation) {
                         ($this->generated)(new Mutation($node, $mutation));
                     }
                 }
             }
-
         };
     }
 };

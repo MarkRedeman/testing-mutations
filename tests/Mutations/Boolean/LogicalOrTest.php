@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Renamed\Tests\Mutations\Boolean;
+namespace Renamed\tests\Mutations\Boolean;
 
 use Renamed\Tests\MutationOperatorTest as TestCase;
 use Renamed\Mutations\Boolean\LogicalOr;
@@ -12,17 +12,17 @@ class LogicalOrTest extends TestCase
 {
     protected function operator() : MutationOperator
     {
-        return new LogicalOr;
+        return new LogicalOr();
     }
 
     /** @test */
-    function it_mutates_or_to_and()
+    public function it_mutates_or_to_and()
     {
-        $this->mutates("if (true || true);")->to("if (true && true);");
+        $this->mutates('if (true || true);')->to('if (true && true);');
     }
 
     /** @test */
-    function it_only_mutates_boolean_and_operators()
+    public function it_only_mutates_boolean_and_operators()
     {
         $this->doesNotMutate('$hello = "world";');
     }

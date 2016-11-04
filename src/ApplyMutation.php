@@ -9,7 +9,6 @@ use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
-use Renamed\Mutation;
 
 final class ApplyMutation extends NodeVisitorAbstract
 {
@@ -33,7 +32,7 @@ final class ApplyMutation extends NodeVisitorAbstract
      */
     public function apply(Mutation $mutation, Closure $action)
     {
-        $traverser = new NodeTraverser;
+        $traverser = new NodeTraverser();
         $traverser->addVisitor($this->visitor($mutation));
 
         // First apply the mutation, then take action and revert the mutation
@@ -48,8 +47,7 @@ final class ApplyMutation extends NodeVisitorAbstract
      */
     private function visitor(Mutation $mutation) : NodeVisitor
     {
-        return new class($mutation) extends NodeVisitorAbstract
-        {
+        return new class($mutation) extends NodeVisitorAbstract {
             private $mutation;
 
             public function __construct(Mutation $mutation)

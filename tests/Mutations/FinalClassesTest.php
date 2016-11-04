@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Renamed\Tests\Mutations;
 
 use Renamed\MutationOperator;
-use Renamed\Mutations\ReturnNull;
 use Renamed\Tests\MutationOperatorTest as TestCase;
 
 // class FinalClassesTest extends TestCase
@@ -30,7 +29,6 @@ use Renamed\Tests\MutationOperatorTest as TestCase;
 // }
 
 // use PhpParser\Node;
-
 
 // final class FinalClasses implements MutationOperator
 // {

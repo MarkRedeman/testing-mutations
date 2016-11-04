@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Renamed\Tests\Mutations\Boolean;
+namespace Renamed\tests\Mutations\Boolean;
 
 use Renamed\Tests\MutationOperatorTest as TestCase;
 use Renamed\Mutations\Boolean\TrueValue;
@@ -12,17 +12,17 @@ class TrueValueTest extends TestCase
 {
     protected function operator() : MutationOperator
     {
-        return new TrueValue;
+        return new TrueValue();
     }
 
     /** @test */
-    function it_mutates_false_to_true()
+    public function it_mutates_false_to_true()
     {
-        $this->mutates("false;")->to("true;");
+        $this->mutates('false;')->to('true;');
     }
 
     /** @test */
-    function it_does_not_mutate_nodes_are_not_false()
+    public function it_does_not_mutate_nodes_are_not_false()
     {
         $this->doesNotMutate('$hello = "world";');
         $this->doesNotMutate('true;');

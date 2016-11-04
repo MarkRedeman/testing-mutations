@@ -32,11 +32,11 @@ final class DateTimeFromFormat implements MutationOperator
             return;
         }
 
-        if ($node->class->toString() !== "DateTime") {
+        if ($node->class->toString() !== 'DateTime') {
             return;
         }
 
-        yield $this->createFromFormat("ISO8601", $node->args);
+        yield $this->createFromFormat('ISO8601', $node->args);
     }
 
     /**
@@ -47,8 +47,8 @@ final class DateTimeFromFormat implements MutationOperator
     private function createFromFormat(string $format, array $args)
     {
         return new StaticCall(
-            new Name("DateTime"),
-            "createFromFormat",
+            new Name('DateTime'),
+            'createFromFormat',
             array_merge(
                 [$this->format($format)],
                 $args
@@ -62,6 +62,6 @@ final class DateTimeFromFormat implements MutationOperator
      */
     private function format(string $format)
     {
-        return new Arg(new ClassConstFetch(new Name("DateTime"), $format));
+        return new Arg(new ClassConstFetch(new Name('DateTime'), $format));
     }
 }

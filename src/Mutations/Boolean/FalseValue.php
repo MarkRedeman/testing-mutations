@@ -21,7 +21,7 @@ final class FalseValue implements MutationOperator
             return;
         }
 
-        if ($node->parts !== ["true"]) {
+        if ($node->parts !== ['true']) {
             return;
         }
 

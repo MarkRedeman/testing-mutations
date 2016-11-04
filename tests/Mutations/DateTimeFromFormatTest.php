@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Renamed\Tests\Mutations;
+namespace Renamed\tests\Mutations;
 
 use Renamed\Tests\MutationOperatorTest as TestCase;
 use Renamed\Mutations\DateTimeFromFormat;
@@ -17,11 +17,11 @@ class DateTimeFromFormatTest extends TestCase
 {
     protected function operator() : MutationOperator
     {
-        return new DateTimeFromFormat;
+        return new DateTimeFromFormat();
     }
 
     /** @test */
-    function it_mutates_creation_of_date_time_objects_to_a_more_explicit_form()
+    public function it_mutates_creation_of_date_time_objects_to_a_more_explicit_form()
     {
         // Should work for variables
         $this->mutates('new DateTime($date);')->to('DateTime::createFromFormat(DateTime::ISO8601, $date);');
@@ -36,7 +36,7 @@ class DateTimeFromFormatTest extends TestCase
     }
 
     /** @test */
-    function it_keeps_the_date_time_zone_when_mutating()
+    public function it_keeps_the_date_time_zone_when_mutating()
     {
         // Should work for variables
         $this->mutates('new DateTime($date, $timezone);')
@@ -44,20 +44,20 @@ class DateTimeFromFormatTest extends TestCase
     }
 
     /** @test */
-    function it_only_mutates_new_datetime_statements()
+    public function it_only_mutates_new_datetime_statements()
     {
         $this->doesNotMutate('new StdClass;');
         $this->doesNotMutate('$hello = "world";');
     }
 
     /** @test */
-    function it_does_not_mutate_expressions()
+    public function it_does_not_mutate_expressions()
     {
         $this->doesNotMutate('new func();');
     }
 
     /** @test */
-    function it_does_not_mutate_instantiations_of_anonymous_classes()
+    public function it_does_not_mutate_instantiations_of_anonymous_classes()
     {
         $this->doesNotMutate('new class {};');
     }

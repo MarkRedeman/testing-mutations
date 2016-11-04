@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Renamed;
 
 use PhpParser\PrettyPrinter\Standard;
-use Renamed\Mutation;
 use Renamed\Application\Context;
 use Symfony\Component\Process\Process;
 
@@ -59,7 +58,7 @@ final class MutationTester
                 'mutation-file' => $name,
                 'mutation-star-lLine' => $mutation->original()->getAttributes()['startLine'],
                 'mutation-end-line' => $mutation->original()->getAttributes()['endLine'],
-                'mutation-tests' => ''
+                'mutation-tests' => '',
             ],
             $this->printAst($ast)
         );
@@ -82,7 +81,7 @@ EOT;
 
     private function printAst(array $ast) : string
     {
-        return '<?php ' . (new Standard)->prettyPrint(
+        return '<?php ' . (new Standard())->prettyPrint(
             $this->trimDeclareStrict($ast)
         );
     }
@@ -96,7 +95,7 @@ EOT;
     {
         if ($ast[0] instanceof \PhpParser\Node\Stmt\Declare_) {
             if ($ast[0]->declares[0] instanceof \PhpParser\Node\Stmt\DeclareDeclare
-                && $ast[0]->declares[0]->key == "strict_types") {
+                && $ast[0]->declares[0]->key == 'strict_types') {
                 array_shift($ast);
             }
         }

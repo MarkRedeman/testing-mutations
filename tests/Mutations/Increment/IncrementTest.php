@@ -12,23 +12,23 @@ class IncrementTest extends TestCase
 {
     protected function operator() : MutationOperator
     {
-        return new Increment;
+        return new Increment();
     }
 
     /** @test */
-    function it_mutates_post_increment_operator_to_post_decrement()
+    public function it_mutates_post_increment_operator_to_post_decrement()
     {
         $this->mutates('$hello++;')->to('$hello--;');
     }
 
     /** @test */
-    function it_mutates_pre_increment_operator_to_pre_decrement()
+    public function it_mutates_pre_increment_operator_to_pre_decrement()
     {
         $this->mutates('++$hello;')->to('--$hello;');
     }
 
     /** @test */
-    function it_only_mutates_equal_signs()
+    public function it_only_mutates_equal_signs()
     {
         $this->doesNotMutate('$hello = "world";');
     }

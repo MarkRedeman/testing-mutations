@@ -32,7 +32,6 @@
 
 // use PhpParser\Node;
 
-
 // final class PropertyAccess implements MutationOperator
 // {
 //     /**

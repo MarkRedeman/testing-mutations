@@ -5,25 +5,24 @@ declare(strict_types=1);
 namespace Renamed\Tests\Mutations;
 
 use Renamed\MutationOperator;
-use Renamed\Mutations\ReturnNull;
 use Renamed\Tests\MutationOperatorTest as TestCase;
 
 class VisibilityAccessTest extends TestCase
 {
     protected function operator() : MutationOperator
     {
-        return new VisibilityAccess;
+        return new VisibilityAccess();
     }
 
     /** @test */
-    function it_makes_classes_final()
+    public function it_makes_classes_final()
     {
         $this->mutates('class HelloWorld {}')->to('final class HelloWorld {}');
         // $this->mutates('class HelloWorld {public $hello;}')->to('class HelloWorld {private $hello;}');
     }
 
     /** @test */
-    function it_only_mutates_public_classes()
+    public function it_only_mutates_public_classes()
     {
         $this->doesNotMutate('final class HelloWorld {}');
         $this->doesNotMutate('abstract class HelloWorld {}');
@@ -31,7 +30,7 @@ class VisibilityAccessTest extends TestCase
     }
 
     /** @test */
-    function it_only_mutates_return_statements()
+    public function it_only_mutates_return_statements()
     {
         $this->doesNotMutate('new StdClass;');
         $this->doesNotMutate('$hello = "world";');
@@ -39,7 +38,6 @@ class VisibilityAccessTest extends TestCase
 }
 
 use PhpParser\Node;
-
 
 /**
  * Changes the visibility of properties (and methods?) changing

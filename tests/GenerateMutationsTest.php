@@ -25,7 +25,7 @@ class GenerateMutationsTest extends TestCase
     }
 
     /** @test */
-    function it_cant_create_mutatins_if_no_mutation_operators_have_been_applied()
+    public function it_cant_create_mutatins_if_no_mutation_operators_have_been_applied()
     {
         $mutations = [];
         $generator = new GenerateMutations($this->afterGeneration($mutations));
@@ -35,15 +35,15 @@ class GenerateMutationsTest extends TestCase
     }
 
     /** @test */
-    function it_generates_mutations_from_a_given_AST()
+    public function it_generates_mutations_from_a_given_AST()
     {
         // Use a null operator, that it it changes each node to `null`
-        $operator = new class implements MutationOperator {
-                public function mutate(Node $node)
-                {
-                    yield null;
-                }
-            };
+        $operator = new class() implements MutationOperator {
+            public function mutate(Node $node)
+            {
+                yield null;
+            }
+        };
 
         $mutations = [];
         $generator = new GenerateMutations($this->afterGeneration($mutations));
@@ -61,7 +61,7 @@ class GenerateMutationsTest extends TestCase
     private function generateASTFromCode(string $code) : array
     {
         $lexer = new Lexer(['usedAttributes' => ['startline', 'endline']]);
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7, $lexer);
         return $parser->parse($code);
     }
 

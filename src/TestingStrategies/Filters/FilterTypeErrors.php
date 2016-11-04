@@ -6,5 +6,4 @@ namespace Renamed\TestingStrategies\Filters;
 
 final class FilterTypeErrors
 {
-
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Renamed\Tests\Mutations;
+namespace Renamed\tests\Mutations;
 
 use Renamed\Tests\MutationOperatorTest as TestCase;
 use Renamed\Mutations\BinaryOperatorReplacement;
@@ -17,19 +17,18 @@ class BinaryOperatorReplacementTest extends TestCase
 {
     protected function operator() : MutationOperator
     {
-        return new BinaryOperatorReplacement;
+        return new BinaryOperatorReplacement();
     }
 
     /** @test */
-    function it_mutates_binary_operators()
+    public function it_mutates_binary_operators()
     {
-        $this->mutates("1 * 2;")->to("1 / 2;");
+        $this->mutates('1 * 2;')->to('1 / 2;');
     }
 
     /** @test */
-    function it_does_not_mutate_nodes_that_arent_binary_operators()
+    public function it_does_not_mutate_nodes_that_arent_binary_operators()
     {
         $this->doesNotMutate('$hello = "world";');
     }
-
 }

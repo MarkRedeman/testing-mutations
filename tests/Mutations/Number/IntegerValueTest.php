@@ -12,11 +12,11 @@ class IntegerValueTest extends TestCase
 {
     protected function operator() : MutationOperator
     {
-        return new IntegerValue;
+        return new IntegerValue();
     }
 
     /** @test */
-    function it_mutates_integer_values()
+    public function it_mutates_integer_values()
     {
         $this->mutates('0;')->to('1;');
         $this->mutates('1;')->to('0;');
@@ -24,7 +24,7 @@ class IntegerValueTest extends TestCase
     }
 
     /** @test */
-    function it_only_mutates_integer_values()
+    public function it_only_mutates_integer_values()
     {
         $this->doesNotMutate('$hello = "world";');
     }

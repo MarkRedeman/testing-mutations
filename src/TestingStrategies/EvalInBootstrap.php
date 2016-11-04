@@ -6,5 +6,4 @@ namespace Renamed\TestingStrategies;
 
 final class EvalInBootstrap
 {
-
 }

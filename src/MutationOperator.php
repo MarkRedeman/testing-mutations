@@ -6,6 +6,7 @@ namespace Renamed;
 
 use PhpParser\Node;
 
-interface MutationOperator {
+interface MutationOperator
+{
     public function mutate(Node $node);
 }

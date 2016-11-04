@@ -18,11 +18,11 @@ class ApplyMutationTest extends TestCase
     use GenerateASTFromCode;
 
     /** @test */
-    function it_performs_an_action_after_a_mutation_has_been_applied()
+    public function it_performs_an_action_after_a_mutation_has_been_applied()
     {
         $applied = false;
-        $original = LNumber::fromString("1");
-        $target = LNumber::fromString("2");
+        $original = LNumber::fromString('1');
+        $target = LNumber::fromString('2');
 
         $ast = [$original];
         $mutation = new Mutation($original, $target);
@@ -39,22 +39,23 @@ class ApplyMutationTest extends TestCase
     }
 
     /** @test */
-    function it_reverts_the_ast_when_finished()
+    public function it_reverts_the_ast_when_finished()
     {
         // The AST will look like:
         // min(plus(4, mul(3, 2)), 1)
-        $source = "<?php 4 + 3 * 2 - 1;";
+        $source = '<?php 4 + 3 * 2 - 1;';
         $ast = $this->generateASTFromCode($source);
         $apply = new ApplyMutation($ast);
         $applyMutation = function (Mutation $mutation) use ($apply, $source, $ast) {
-            $apply->apply($mutation, function (Mutation $mutation, $ast) {});
+            $apply->apply($mutation, function (Mutation $mutation, $ast) {
+            });
 
             $this->assertEquals($this->generateASTFromCode($source), $ast);
         };
 
         $generate = new GenerateMutations(
             $applyMutation,
-            new class implements MutationOperator {
+            new class() implements MutationOperator {
                 public function mutate(Node $node)
                 {
                     yield null;
@@ -66,43 +67,43 @@ class ApplyMutationTest extends TestCase
 
         $mutation = new Mutation($ast[0]->left->right->left, null);
         $apply = new ApplyMutation($ast);
-        $apply->apply($mutation, function (Mutation $mutation, $ast) {});
+        $apply->apply($mutation, function (Mutation $mutation, $ast) {
+        });
         $this->assertEquals($this->generateASTFromCode($source), $ast);
 
         $mutation = new Mutation($ast[0]->left->right->right, null);
         $apply = new ApplyMutation($ast);
-        $apply->apply($mutation, function (Mutation $mutation, $ast) {});
+        $apply->apply($mutation, function (Mutation $mutation, $ast) {
+        });
         $this->assertEquals($this->generateASTFromCode($source), $ast);
 
         $mutation = new Mutation($ast[0]->left->left, null);
         $apply = new ApplyMutation($ast);
-        $apply->apply($mutation, function (Mutation $mutation, $ast) {});
+        $apply->apply($mutation, function (Mutation $mutation, $ast) {
+        });
 
         $this->assertEquals($this->generateASTFromCode($source), $ast);
     }
 
     /** @test */
-    function it_stops_stops_traversing_the_AST_when_it_has_applied_the_mutation()
+    public function it_stops_stops_traversing_the_AST_when_it_has_applied_the_mutation()
     {
-        $source = "<?php 2 / 3;";
+        $source = '<?php 2 / 3;';
         $ast = $this->generateASTFromCode($source);
         $two = $ast[0]->left;
-        // var_dump($two);
         $ast[0]->right = $two;
-        // var_dump($ast);
 
-        $mutation = new Mutation($two, LNumber::fromString("1"));
+        $mutation = new Mutation($two, LNumber::fromString('1'));
         $apply = new ApplyMutation($ast);
         $apply->apply($mutation, function (Mutation $mutation, $ast) {
             // var_dump( (new Standard)->prettyPrint($ast));
-            var_dump($ast);
         });
         // var_dump($ast);
         // $this->assertEquals($this->generateASTFromCode($source), $ast);
 
         return;
         $mutate = new MutateSourceCode(
-            new Multiplication
+            new Multiplication()
         );
 
         $mutate->mutate($source, $this->storeAppliedMutations());
