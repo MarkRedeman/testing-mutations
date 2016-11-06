@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Renamed\Application;
+namespace Renamed\Application\Events;
 
 final class EventEmitter
 {
