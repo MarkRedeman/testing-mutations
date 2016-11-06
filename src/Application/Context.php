@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Renamed\Application;
 
+use Renamed\Application\Events\EventEmitter;
+
 interface Context
 {
     public function eventEmitter() : EventEmitter;
-    public function sourceLocator() : SourceLocator;
+    // public function sourceLocator() : SourceLocator;
     public function operators() : array;
-}
-
-interface Extendable
-{
-    public function load(Extension $extension);
 }
 
 abstract class Extension implements Context

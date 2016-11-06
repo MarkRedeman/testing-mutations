@@ -5,34 +5,35 @@ declare(strict_types=1);
 namespace Renamed\Application;
 
 use Renamed\Mutations;
+use Renamed\Application\Events\EventEmitter;
 
-final class ApplicationContext implements Context, Extendable
+final class ApplicationContext implements Context
 {
     private $env;
     private $config;
     private $extensions = [];
 
+    private $emitter = null;
+
     public function __construct(Environment $env)
     {
         $this->env = $env;
-        $this->env->loadExtensions($this);
+        $this->env->loadExtensions($this, function($extension) {
+            $this->extensions[] = $extension;
+        });
 
         // get configuration file from
 
         // $this->config = require($env->configurationFile());
     }
 
-    public function load(Extension $extension)
-    {
-        $this->extensions[] = $extension;
-    }
-
     public function eventEmitter() : EventEmitter
     {
-    }
+        if ($this->emitter === null) {
+            $this->emitter = new EventEmitter();
+        }
 
-    public function sourceLocator() : SourceLocator
-    {
+        return $this->emitter;
     }
 
     /**
