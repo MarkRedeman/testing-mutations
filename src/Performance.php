@@ -1,47 +1,46 @@
 <?php
-/**
- * Humbug
- *
- * @category   Humbug
- * @copyright  Copyright (c) 2015 Pádraic Brady (http://blog.astrumfutura.com)
- * @license    https://github.com/padraic/humbug/blob/master/LICENSE New BSD License
- */
 
 namespace Renamed;
 
+use Renamed\Utility\Clock;
+use DateTimeImmutable;
+
 class Performance
 {
-    protected static $startTime;
+    private $clock;
+    private $startTime;
+    private $endTime;
 
-    protected static $endTime;
-
-    public static function start()
+    public function __construct(Clock $clock)
     {
-        self::$startTime = microtime(true);
-        self::$endTime = null;
+        $this->clock = $clock;
     }
 
-    public static function stop()
+    public function start()
     {
-        self::$endTime = microtime(true);
+        $this->startTime = $this->clock->time();
+        $this->endTime = null;
     }
 
-    public static function getTime()
+    public function stop()
     {
-        if (empty(self::$endTime)) {
-            return microtime(true) - self::$startTime;
-        }
-        return self::$endTime - self::$startTime;
+        $this->endTime = $this->clock->time();
     }
 
-    public static function getTimeString()
+    private function time() : string
+    {
+        return $this->toMicroseconds($this->endTime) - $this->toMicroseconds($this->startTime);
+    }
+
+    public function formatTime() : string
     {
         $horizons = [
             'hour'   => 3600000,
             'minute' => 60000,
             'second' => 1000,
         ];
-        $milliseconds = round(self::getTime() * 1000);
+        $milliseconds = round($this->time());
+
         foreach ($horizons as $unit => $value) {
             if ($milliseconds >= $value) {
                 $time = floor($milliseconds / $value * 100.0) / 100.0;
@@ -51,27 +50,19 @@ class Performance
         return $milliseconds . ' milliseconds';
     }
 
-    public static function getMemoryUsage()
+    // Mb
+    private function memoryUsage() : float
     {
-        return (memory_get_peak_usage(true) / 1048576);
+        return (memory_get_peak_usage(true) / (1024 * 1024));
     }
 
-    public static function getMemoryUsageString()
+    public function formatMemoryUsage() : string
     {
-        return sprintf('%4.2fMB', self::getMemoryUsage());
+        return sprintf('%4.2fMB', $this->memoryUsage());
     }
 
-    public static function upMemProfiler()
+    private function toMicroseconds(DateTimeImmutable $time) : string
     {
-        if (function_exists('memprof_enable')) {
-            memprof_enable();
-        }
-    }
-
-    public static function downMemProfiler()
-    {
-        if (function_exists('memprof_enable')) {
-            memprof_dump_callgrind(fopen(sys_get_temp_dir() . '/callgrind.humbug.out', 'w'));
-        }
+        return ($time->format('U') * 1000) + ($time->format('u') / 1000);
     }
 }

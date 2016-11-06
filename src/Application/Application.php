@@ -9,6 +9,8 @@ use Renamed\MutationTester;
 use Renamed\Mutation;
 use Renamed\Mutations;
 use Symfony\Component\Process\Process;
+use Renamed\Utility\HighPrecisionClock;
+use Renamed\Performance;
 
 /**
  *
@@ -39,7 +41,11 @@ final class Application
 
     public function run()
     {
-        \Renamed\Performance::start();
+        $performance = new Performance(
+            new HighPrecisionClock()
+        );
+        $performance->start();
+
         // From context?
         $mutate = new MutateSourceCode(...$this->context->operators());
         $tester = new MutationTester($this->context);
@@ -87,9 +93,9 @@ final class Application
         $this->scoreboard->stop();
         echo "We've had: " . $this->runs . ' mutations of which ' . $this->fails . " escaped.\n";
 
-        \Renamed\Performance::stop();
-        echo 'Time: ' . \Renamed\Performance::getTimeString() . "\n"; // 36640
-        echo 'Memory: ' . \Renamed\Performance::getMemoryUsageString() . "\n"; // 36640
+        $performance->stop();
+        echo 'Time: ' . $performance->formatTime() . "\n"; // 36640
+        echo 'Memory: ' . $performance->formatMemoryUsage() . "\n"; // 36640
 
         return;
     }
