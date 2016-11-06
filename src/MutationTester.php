@@ -14,29 +14,18 @@ final class MutationTester
     private $projectPath;
     private $bootstrapFile;
 
-    // string $projectPath, string $executable, string $bootstrap = null, string $options = null
-    public function __construct(Context $context)
-    {
-        $config = $context->config();
-
-        $projectPath = realpath($config['project-path']);
-
-        // Todo setpu bootstrap file
-        // we probably want to do this in preperation phase
-        $bootstrap = $projectPath . '/' . $config['test-framework-bootstrap'];
-
+    public function __construct(
+        string $projectPath,
+        string $executable,
+        string $bootstrap = null,
+        array $options = []
+    ) {
         // Use a custom bootstrap file saved at a temporary location
-        $this->bootstrapFile = tmpfile();
-        fwrite($this->bootstrapFile, $this->renderBootstrapFile($bootstrap));
-        $path = stream_get_meta_data($this->bootstrapFile)['uri'];
+        $path = $this->setupMutationBoostrapFile($bootstrap);
 
         $command = implode(
             ' ',
-            array_merge(
-                [$config['test-framework-executable']],
-                ["--bootstrap ${path}"],
-                $config['test-framework-options']
-            )
+            array_merge([$executable], ["--bootstrap ${path}"], $options)
         );
 
         $this->command = $command;
@@ -67,6 +56,27 @@ final class MutationTester
         return new TestResult($process, $process->isSuccessful(), $process->getOutput());
     }
 
+    /**
+     * Create a temporary bootstrap file which applies the mutation during
+     * the tests.
+     * This file is temporary and will be deleted once $this is removed
+     * @return string path to bootstrap file
+     */
+    private function setupMutationBoostrapFile(string $bootstrap) : string
+    {
+        $this->bootstrapFile = tmpfile();
+        fwrite($this->bootstrapFile, $this->renderBootstrapFile($bootstrap));
+
+        return stream_get_meta_data($this->bootstrapFile)['uri'];
+    }
+
+    /**
+     * First require the project's original bootstrap file and then simply
+     * apply the mutation by evalling its contents
+     *
+     * Note that if strict typing is enabled this file should also have
+     * enabled strict typing
+     */
     private function renderBootstrapFile(string $bootstrap) : string
     {
         return <<<EOT

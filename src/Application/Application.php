@@ -47,10 +47,16 @@ final class Application
         $performance->start();
 
         // From context?
-        $mutate = new MutateSourceCode(...$this->context->operators());
-        $tester = new MutationTester($this->context);
-
         $config = $this->context->config();
+        $mutate = new MutateSourceCode(...$this->context->operators());
+
+        $tester = new MutationTester(
+            $projectPath = realpath($config['project-path']),
+            $config['test-framework-executable'],
+            realpath($config['project-path']. '/' . $config['test-framework-bootstrap']),
+            $config['test-framework-options']
+        );
+
         $files = $this->sourceFiles($config['project-path'], $config['target-directories']);
         // $emitter = $this->context->emitter();
 
