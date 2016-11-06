@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Renamed\Tests;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use Renamed\Performance;
+use Renamed\Utility\Performance;
 use DateTimeImmutable;
 use Renamed\Utility\Clock;
 

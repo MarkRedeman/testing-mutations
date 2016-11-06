@@ -10,7 +10,7 @@ use Renamed\Mutation;
 use Renamed\Mutations;
 use Symfony\Component\Process\Process;
 use Renamed\Utility\HighPrecisionClock;
-use Renamed\Performance;
+use Renamed\Utility\Performance;
 
 /**
  *

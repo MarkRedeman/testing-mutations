@@ -1,6 +1,6 @@
 <?php
 
-namespace Renamed;
+namespace Renamed\Utility;
 
 use Renamed\Utility\Clock;
 use DateTimeImmutable;
