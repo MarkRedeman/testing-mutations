@@ -67,7 +67,7 @@ final class GenerateMutations
             {
                 foreach ($this->operators as $operator) {
                     foreach ($operator->mutate($node) as $mutation) {
-                        ($this->generated)(new Mutation($node, $mutation));
+                        ($this->generated)(new Mutation($node, $mutation, get_class($operator)));
                     }
                 }
             }

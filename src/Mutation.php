@@ -27,10 +27,13 @@ final class Mutation
      */
     private $mutation;
 
-    public function __construct(Node $original, $mutation)
+    public $operator;
+
+    public function __construct(Node $original, $mutation, string $operator = '')
     {
         $this->original = $original;
         $this->mutation = $mutation;
+        $this->operator = $operator;
     }
 
     /**
