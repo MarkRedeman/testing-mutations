@@ -40,6 +40,10 @@ final class MutationTester
         // Thought: adding environment variables containing the file that is being mutated
         // with its starting and ending line could make it possible for external extensions
         // (that is PHPUnit or PhpSpec extensions) to filter out certain tests
+
+        // We will send the mutated code trough STDIN
+        $mutated = $this->printAst($ast);
+
         $process = new Process(
             $this->command,
             $this->projectPath,
@@ -49,7 +53,7 @@ final class MutationTester
                 'mutation-end-line' => $mutation->original()->getAttributes()['endLine'],
                 'mutation-tests' => '',
             ],
-            $this->printAst($ast)
+            $mutated
         );
         $process->run();
 
@@ -67,7 +71,9 @@ final class MutationTester
         $this->bootstrapFile = tmpfile();
         fwrite($this->bootstrapFile, $this->renderBootstrapFile($bootstrap));
 
-        return stream_get_meta_data($this->bootstrapFile)['uri'];
+        $metadata = stream_get_meta_data($this->bootstrapFile);
+
+        return $metadata['uri'];
     }
 
     /**
