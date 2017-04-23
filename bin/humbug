@@ -23,26 +23,16 @@
         exit(1);
     }
 
-    // I'm trying to make each part of the application purely unit testable
-    // $app = new Renamed\Application\Console(
-    //     new Renaemd\Application\ConsoleContext(
-
-
-    // replace with include bootstrap / application
     $app = new Renamed\Application\Application(
         new Renamed\Application\ApplicationContext(
             new Renamed\Application\Environment(
                 $arguments,
                 [
-                    // formularium, phpspec
                     'cwd' => getcwd(),
-                    // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/',
-                    'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/demo-phpunit/',
-                    // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/phpspec/',
-                    // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/Core/'
-                    // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/formularium/'
-                    // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/ProfessorFrancken/'
+                    'project-path' => __DIR__ . '/../examples/demo-phpunit/',
                 ],
+
+                // At some point replace this with a configuration loader
                 // (new Renamed\Application\ConfigurationLoader())(getcwd())
                 [
                     // 'test-framework-executable' => 'vendor/bin/phpspec run',
@@ -55,30 +45,6 @@
                         // '--format=dot',
                         // '--testsuite "Unit"'
                     ],
-                    'target-directories' => [
-                        'src'
-                        // 'Accessor',
-                        // 'Context',
-                        // 'Currency',
-                        // 'Dashboard',
-                        // 'Distributor',
-                        // 'Exception',
-                        // 'Factory',
-                        // 'Formatter',
-                        // 'Metadata',
-                        // 'Model',
-                        // 'OrderProcessing',
-                        // 'Payment',
-                        // 'Pricing',
-                        // 'Promotion',
-                        // 'Provider',
-                        // 'Remover',
-                        // 'Repository',
-                        // 'Resolver',
-                        // 'Taxation',
-                        // 'Test',
-                        // 'Uploader'
-                    ],
                     'test-frameworks' => [
                         'phpunit' => [
                             'executable' => 'vendor/bin/phpunit',
@@ -87,21 +53,22 @@
                                 '--stop-on-failure'
                             ]
                         ],
-                        'phpspec' => [
-                            'executable' => 'bin/phpspec',
-                            'bootstrap' => 'vendor/autoload.php',
-                            'options' => [
-                                '--stop-on-failure'
-                            ]
-                        ],
-                        'behat' => [
-                            'executable' => 'vendor/bin/behat',
-                            'bootstrap' => 'vendor/autoload.php',
-                            'options' => [
-                                '--stop-on-failure'
-                            ]
-                        ]
+                        // 'phpspec' => [
+                        //     'executable' => 'bin/phpspec',
+                        //     'bootstrap' => 'vendor/autoload.php',
+                        //     'options' => [
+                        //         '--stop-on-failure'
+                        //     ]
+                        // ],
+                        // 'behat' => [
+                        //     'executable' => 'vendor/bin/behat',
+                        //     'bootstrap' => 'vendor/autoload.php',
+                        //     'options' => [
+                        //         '--stop-on-failure'
+                        //     ]
+                        // ]
                     ],
+                    'target-directories' => ['src'],
                     'extensions' => [
                         \Renamed\Application\Extensions\NyanCatProgressBar::class,
                         \Renamed\Application\Extensions\OutputStatistics::class,
@@ -110,8 +77,8 @@
                     ]
                 ]
             )
-            )
-            // )
-        );
+        )
+    );
+
     $app->run();
 })('0.0.1', $argv);
