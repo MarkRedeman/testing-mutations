@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  php:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    command: vendor/bin/phpunit
+    volumes:
+      - .:/var/www/my_app

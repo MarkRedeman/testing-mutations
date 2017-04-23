@@ -1,0 +1,5 @@
+suites:
+    conway_suite:
+        namespace: Kata\Conway
+        src_path: %paths.config%/src
+        spec_path: %paths.config%
