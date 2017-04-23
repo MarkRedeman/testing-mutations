@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Renamed\Application\Events;
 
-interface EventListener
+interface Event
 {
-    public function handle(Event $event);
+
 }

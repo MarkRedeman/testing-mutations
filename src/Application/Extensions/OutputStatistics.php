@@ -30,7 +30,7 @@ final class OutputStatistics implements Context
                 }
 
 
-                public function handle($event)
+                public function handle(Events\Event $event)
                 {
                     if ($event instanceof Events\StartedApplication) {
                         $this->performance->start();

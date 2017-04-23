@@ -6,7 +6,7 @@ namespace Renamed\Application\Events;
 
 use Renamed\Mutation;
 
-final class MutationEscaped
+final class MutationEscaped implements Event
 {
     private $mutation;
 

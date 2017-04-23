@@ -19,7 +19,7 @@ final class KeepTrackOfMutationsOnFile implements Context
 
                 private $mutations = 0;
 
-                public function handle($event)
+                public function handle(Events\Event $event)
                 {
                     if ($event instanceof Events\MutationEscaped) {
                         $this->mutations++;

@@ -6,7 +6,7 @@ namespace Renamed\Application\Events;
 
 use Renamed\Mutation;
 
-final class MutationsOnFileWereCompleted
+final class MutationsOnFileWereCompleted implements Event
 {
     private $filename;
 

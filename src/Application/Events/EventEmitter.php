@@ -8,7 +8,7 @@ final class EventEmitter
 {
     private $listeners = [];
 
-    public function emit($event)
+    public function emit(Event $event)
     {
         foreach ($this->listeners as $listener) {
             $listener->handle($event);
