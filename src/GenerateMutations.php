@@ -41,6 +41,18 @@ final class GenerateMutations
     public function generate(array $ast)
     {
         // We never want to mutate declare strict statements
+        $ast = $this->trimDeclareStrict($ast);
+
+        $this->traverser->traverse($ast);
+    }
+
+    /**
+     * Due to the way that we're executing mutated source code we will
+     * have to remove delcare strict statements
+     * Hopefully this is a temporary fix
+     */
+    private function trimDeclareStrict(array $ast) : array
+    {
         if ($ast[0] instanceof \PhpParser\Node\Stmt\Declare_) {
             if ($ast[0]->declares[0] instanceof \PhpParser\Node\Stmt\DeclareDeclare
                 && $ast[0]->declares[0]->key == 'strict_types') {
@@ -48,7 +60,7 @@ final class GenerateMutations
             }
         }
 
-        $this->traverser->traverse($ast);
+        return $ast;
     }
 
     /**

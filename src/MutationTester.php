@@ -91,25 +91,6 @@ EOT;
 
     private function printAst(array $ast) : string
     {
-        return '<?php ' . (new Standard())->prettyPrint(
-            $this->trimDeclareStrict($ast)
-        );
-    }
-
-    /**
-     * Due to the way that we're executing mutated source code we will
-     * have to remove delcare strict statements
-     * Hopefully this is a temporary fix
-     */
-    private function trimDeclareStrict(array $ast) : array
-    {
-        if ($ast[0] instanceof \PhpParser\Node\Stmt\Declare_) {
-            if ($ast[0]->declares[0] instanceof \PhpParser\Node\Stmt\DeclareDeclare
-                && $ast[0]->declares[0]->key == 'strict_types') {
-                array_shift($ast);
-            }
-        }
-
-        return $ast;
+        return '<?php ' . (new Standard())->prettyPrint($ast);
     }
 }
