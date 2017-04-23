@@ -8,8 +8,6 @@ use Renamed\Application\Events\EventEmitter;
 
 interface Context
 {
-    public function eventEmitter() : EventEmitter;
-    // public function sourceLocator() : SourceLocator;
     public function operators() : array;
 }
 

@@ -40,6 +40,14 @@ final class GenerateMutations
      */
     public function generate(array $ast)
     {
+        // We never want to mutate declare strict statements
+        if ($ast[0] instanceof \PhpParser\Node\Stmt\Declare_) {
+            if ($ast[0]->declares[0] instanceof \PhpParser\Node\Stmt\DeclareDeclare
+                && $ast[0]->declares[0]->key == 'strict_types') {
+                array_shift($ast);
+            }
+        }
+
         $this->traverser->traverse($ast);
     }
 

@@ -2,7 +2,6 @@
 <?php
 
 (function ($version, $arguments) {
-
     // Nicely copied from PHPSpec's executable
 
     if (is_file($autoload = getcwd() . '/vendor/autoload.php')) {
@@ -27,6 +26,9 @@
     // I'm trying to make each part of the application purely unit testable
     // $app = new Renamed\Application\Console(
     //     new Renaemd\Application\ConsoleContext(
+
+
+    // replace with include bootstrap / application
     $app = new Renamed\Application\Application(
         new Renamed\Application\ApplicationContext(
             new Renamed\Application\Environment(
@@ -34,6 +36,7 @@
                 [
                     // formularium, phpspec
                     'cwd' => getcwd(),
+                    // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/',
                     'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/demo-phpunit/',
                     // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/phpspec/',
                     // 'project-path' => '/home/mark/Projects/renamed-humbug/pocs/test-with-mutation/examples/Core/'
@@ -45,8 +48,8 @@
                     // 'test-framework-executable' => 'vendor/bin/phpspec run',
                     // 'test-framework-executable' => 'bin/phpspec run',
                     'test-framework-executable' => 'vendor/bin/phpunit',
-                    'test-framework-bootstrap' => 'bootstrap/autoload.php',
-                    // 'test-framework-bootstrap' => 'vendor/autoload.php',
+                    // 'test-framework-bootstrap' => 'bootstrap/autoload.php',
+                    'test-framework-bootstrap' => 'vendor/autoload.php',
                     'test-framework-options' => [
                         '--stop-on-failure',
                         // '--format=dot',
@@ -98,6 +101,11 @@
                                 '--stop-on-failure'
                             ]
                         ]
+                    ],
+                    'extensions' => [
+                        \Renamed\Application\Extensions\NyanCatProgressBar::class,
+                        \Renamed\Application\Extensions\OutputStatistics::class,
+                        \Renamed\Application\Extensions\MeassurePerformance::class,
                     ]
                 ]
             )
@@ -105,5 +113,4 @@
             // )
         );
     $app->run();
-
 })('0.0.1', $argv);

@@ -18,21 +18,22 @@ final class ApplicationContext implements Context
     public function __construct(Environment $env)
     {
         $this->env = $env;
-        $this->env->loadExtensions($this, function($extension) {
-            $this->extensions[] = $extension;
-        });
 
         // get configuration file from
 
         // $this->config = require($env->configurationFile());
+
+        $this->emitter = new EventEmitter();
+
+
+        // Setup extensions
+        $this->env->loadExtensions($this, function($extension) {
+            $this->extensions[] = $extension;
+        });
     }
 
     public function eventEmitter() : EventEmitter
     {
-        if ($this->emitter === null) {
-            $this->emitter = new EventEmitter();
-        }
-
         return $this->emitter;
     }
 
@@ -86,7 +87,7 @@ final class ApplicationContext implements Context
                 new Mutations\Increment\Decrement(),
                 new Mutations\Increment\Increment(),
                 new Mutations\Number\FloatValue(),
-                // new Mutations\Number\IntegerValue
+                new Mutations\Number\IntegerValue
         ];
 
         // Load from environment

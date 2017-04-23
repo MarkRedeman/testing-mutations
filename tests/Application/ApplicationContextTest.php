@@ -39,7 +39,7 @@ class ApplicationContextTest extends TestCase
 
         $operators = $context->operators();
 
-        $this->assertCount(42, $operators);
+        $this->assertCount(43, $operators);
     }
 
     /** @test */
@@ -52,7 +52,7 @@ class ApplicationContextTest extends TestCase
 
         $operators = $context->operators();
 
-        $this->assertCount(43, $operators);
+        $this->assertCount(44, $operators);
     }
 
 

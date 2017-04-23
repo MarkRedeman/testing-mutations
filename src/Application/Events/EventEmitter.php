@@ -6,7 +6,7 @@ namespace Renamed\Application\Events;
 
 final class EventEmitter
 {
-    private $listeners;
+    private $listeners = [];
 
     public function emit($event)
     {
