@@ -1,202 +1,86 @@
-Coupled code get painful when change happens.
-Decoupled code was wasted effort when change doesn't happen.
+* Testing mutations
 
-* Test with mutations
-The following is a proof of concept that executes a test suite but replaces part
-of the system under test with a mutation, see [[https://github.com/MarkRedeman/ast-based-mutations][AST based mutations]].
+The following is a proof of concept that combines a previous proof of concept
+that introduced [[https://github.com/MarkRedeman/ast-based-mutations][mutations with the AST]] with a simple way to test the mutations.
 
-Note that [[https://github.com/padraic/humbug][Humbug]] already supports running tests with a mutation but it currently
-only supports PHPUnit (though there exists [[https://github.com/padraic/humbug/pull/145][a pullrequest]] to support phpspec).
+This approach can be used in combination with most popular testing frameworks,
+though their speed may vary.
 
-The goal of this proof of concept is to find a common interface that can be used
-for different testing frameworks.
+** Testing mutations
 
-** The interface
-We should have a test runner that has a =testWithMutation(Mutation $mutation)=
-method where the =Mutation= object has at least a getter for the file that has
-been mutated and a getter for the mutated source.
+Before I explain how this project tests mutations let's summarize how Humbug
+currently tests mutations.
 
-*** Performance optimizations
-When doing mutation testing it is common to not run all the tests. Instead we
-use code coverage to find all the test that cover the given mutation and only
-run those tests.
-This requires that the =Mutation= object also contains the starting and ending
-line of the original code that has been mutated. Moreover we will also need some
-way to read the code coverage data.
+Once a mutation has been found Humbug firsts checks whether incremental caching
+is enabled, if it is it will check if the mutation's result is cached.
+If it isn't cached it will build a process. The building of this process is
+actually quite complicated as there are a couple of things we have to know:
 
-For now I won't use these types of performance optimizations as it requires
-better understanding of code coverage formats.
+1. The location of the phpunit executable
+2. Which mutation to run
+3. Which test to run
+4. How to tell the testing framework to test the mutation
 
-*** Different implementations
-Since one of the goals is to add support for multiple testing frameworks we will
-require multiple implementations.
+This project mostly focuses on the last part: telling the framework how to test
+the mutation.
+Humbug creates a special ~phpunit.xml~ file that includes,
 
-*** Bootstrap file
-Both PHPUnit and PHPSpec support choosing a bootstrap file.
+- The project under test's ~phpunit.xml~ settings
+- Additional test listeners
+  - ~JsonLoggingTimeCollectorListener~: this is used to sort test execution
+    based on the time the tests take to run
+  - ~TestSuiteFilterListener~: this is used so that we only run the tests that
+    actually execute the code that has been mutated
+- It sets a new ~bootstrap~ file
 
-** Examples
-
-*** PHPUnit
-
-To run the example unit tests from the root of this project run,
-#+BEGIN_SRC sh
-phpx examples/demo-phpunit/vendor/bin/phpunit -c examples/demo-phpunit/phpunit.xml
-
-# Use a different bootstrap file
-phpx examples/demo-phpunit/vendor/bin/phpunit -c examples/demo-phpunit/phpunit.xml --bootstrap examples/bootstrap_mutation.php
-#+END_SRC
+The approach that I want to try is not using a separate ~phpunit.xml~ file.
+Essentially testing a mutation with phpunit boils down to the following command,
 
 #+BEGIN_SRC sh
-cat examples/cell_mutation.php \
-                               |  phpx examples/demo-phpunit/vendor/bin/phpunit \
-                               --configuration examples/demo-phpunit/phpunit.xml \
-                               --bootstrap examples/bootstrap_mutation.php
+cat examples/example_mutation.php \
+    |  php examples/demo-phpunit/vendor/bin/phpunit \
+           --bootstrap examples/example_bootstrap.php
 #+END_SRC
 
-**** ☛ TODO Only run specific tests
-To improve the performance of the mutations tests we only want to run tests that
-cover a mutation.
-
-Humbug uses an [[https://github.com/padraic/phpunit-extensions][extension]], however this requires changing the phpunit yaml file.
-
-One idea I have is having a pluging similar to [[https://github.com/fiunchinho/phpunit-randomizer][PHPUnit Randomizer]] which uses an
-additional command line argument.
-
-*** PHPSpec
-To run the example specs from the root of this project run,
-#+BEGIN_SRC sh
-phpx examples/demo-phpunit/vendor/bin/phpspec run -c examples/demo-phpunit/phpspec.yml
-
-# Use a different bootstrap file
-phpx examples/demo-phpunit/vendor/bin/phpspec run -c examples/demo-phpunit/phpspec.yml --bootstrap examples/bootstrap_mutation.php
-#+END_SRC
-
-#+BEGIN_SRC sh
-cat examples/cell_mutation.php | \
-                               phpx examples/demo-phpunit/vendor/bin/phpspec run \
-                               -c examples/demo-phpunit/phpspec.yml \
-                              --bootstrap examples/bootstrap_mutation.php
-#+END_SRC
-
-
-* Interfaces
+where the ~example_bootstrap.php~ file contains the following,
 
 #+BEGIN_SRC php
-interface MutationTester
-{
-    public function test(Mutation $mutation, Test[] $tests) : TestResults;
-}
+<?php
 
-final class DefaultMutationTester implements MutationTester
-{
-    public function test(Mutation $mutation, Test[] $tests) : TestResults
-    {
-    each test test mutated ast
-    }
-}
+require_once __DIR__ . '/demo-phpunit/bootstrap/autoload.php';
 
-$tests = $testsForMutation($mutation, $coverage);
-$tests($mutatedAST);
-
-interface Test
-{
-}
+eval('?>' . file_get_contents('php://stdin'));
 #+END_SRC
 
+Assuming you don't have any manual ~require~ commands in your code
+as otherwise we might load a class twice (once in the bootstrap file and once in
+your manual ~require~) this works (at least in all projects that I've tried).
 
-* Notes
-We can use startline and endlinte of a mutation's original node to collect
-covering tests
+Since the command above works, there is no need [*] for using a separate
+~phpunit.xml~ file, even better: most testing frameworks have an option to set
+the bootstrap file manually, so we can easily change the file when testing a
+mutation.
 
-Class names and such that may be use full to use
+Though Humbug also uses a bootstrap file to inject the mutation, there is a
+small difference here.
+Humbug stores the mutated code in a temporary file and uses the
+~Humbug\StreamWrapper\IncludeInterceptor~ class to intercept the loading of the
+original class and replace it with the original.
+This might be a more stable approach than simply evalling the mutated code since
+this approach won't break when manually including files.
 
-TestResult
-NeutralMutation
-EvilMutation
+[*] This may not be true: currently we have no way of filtering tests based on
+their code coverage since previously this was done using the ~phpunit.mxl~ file.
+However instead of using a configuration file we might be able to use pipes like
+we're doing with STDIN.
 
-* Look into patchwork
-http://patchwork2.org/
+** Improving testing speed
 
-** Messaging with patchwork
+Humbug has some really nice options that decrease the testing time of the
+mutation, including,
 
-A messaging system such as RabbitMQ could be used to send mutations to workers
-similarly to [[https://github.com/sixty-north/cosmic-ray][Cosmic Ray]].
-Since patchwork allows us to do monkey patching we could reuse workers instead
-of starting a new worker everytime we want to test a mutation.
+- Prioritizing fast tests by sorting tests based on execution speed
+- Only using tests that execute the mutated code
 
-* Research
-
-Neutral vs Evil mutations
-Orthogonal vs ... mutations
-
-** Test Mutation Testers
-
-For each Mutation Tester I should have at least the following tests:
-
-- Given a NOOP mutation the tester should pass
-- Given a mutation that breaks the tests the tester should fail
-
-Since we will have multiple testers / test runners determining whether a
-mutation has been killed or escaped should not be the responsibility of the
-runner. It should only run the tests and return the result.
-
-
-The goal of a mutation testing tool is not only to improve your testsuite but also to improve the system under test. So whenever Humbug encounters code that is difficult to test then that could mean that that code could be improved.
-
-** Extensions
-
-http://pitest.org/quickstart/advanced/
-
-*** Mutation Result Listener
-
-*** Mutation Filter
-
-Pitest passes all mutations of a file to filters and only starts testing the
-mutations after they've gone through a filter.
-
-Passing mutations per file may also benefit output stuff.
-
-*** Test Prioritiser
-
-Instead of having a specific test prioritiser inside our core application we may
-instead use extensions of the current test framework.
-For instance we could have a PHPUnit extension that adds a listener that decides
-which tests will be run (similar to
-https://github.com/padraic/phpunit-extensions).
-
-This extension could use code coverage data to determine which tests to run.
-
-Note: this might bring troubles when we are dealing with neutral (NOOP)
-mutations that do not change a specific file).
-
-We can use environment variables to pass the file and its lines that were
-changed.
-
-*** Test Frameworks
-
-
-* Performance
-I want to do some performance benchmarks. Specifically I want to know how long
-the seperate phases (finding files, mutation generation, applying, testing,
-analyzing) take.
-
-To do this it would be nice to have wrappers (MONADS!)
-
-
-** Git --since option
-
-** Incremental Analysis
-
-** Concurrent Worker
-
-We may be able to have multiple php processes that actively test for mutations.
-We could use a queue system [[https://github.com/sixty-north/cosmic-ray][like cosmic ray]] for the communication between the
-systems.
-
-One of the downsides of having a concurrent process that stays alive after a
-mutation has been dealt with is that normally we aren't able to redefine method
-bodies in PHP.
-However this might be solved with patchwork, though this could cost us
-additional performance.
-
-** Parallelization
+I believe the first point is not necessarily the responsibility of a mutation
+testing tool, but could be used in any project.
