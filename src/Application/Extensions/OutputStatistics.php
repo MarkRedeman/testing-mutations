@@ -32,22 +32,18 @@ final class OutputStatistics implements Context
 
                 public function handle($event)
                 {
-                    if ($event === 'start') {
+                    if ($event instanceof Events\StartedApplication) {
                         $this->performance->start();
                     }
 
-                    if ($event === Events\MutationEscaped::class) {
+                    if ($event instanceof Events\MutationEscaped) {
                         $this->fails += 1;
                     }
 
-                    if ($event === Events\MutationTested::class) {
+                    if ($event instanceof Events\MutationTested) {
                         $this->runs += 1;
                     }
-
-                    if ($event === Events\MutationsOnFileWereCompleted::class) {
-                        // echo "Tested " . count($mutations) . " mutations on [${relName}] \n";
-                    }
-                    if ($event === 'stop') {
+                    if ($event instanceof Events\FinishedApplication) {
                         echo "We've had: " . $this->runs . ' mutations of which ' . $this->fails . " escaped.\n";
                     }
                 }

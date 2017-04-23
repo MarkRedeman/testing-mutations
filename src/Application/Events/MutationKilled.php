@@ -6,7 +6,7 @@ namespace Renamed\Application\Events;
 
 use Renamed\Mutation;
 
-final class MutationFound
+final class MutationKilled
 {
     private $mutation;
 

@@ -41,16 +41,16 @@ final class NyanCatProgressBar implements Context
 
                 public function handle($event)
                 {
-                    if ($event === 'start') {
+                    if ($event instanceof Events\StartedApplication) {
                         $this->scoreboard->start();
                     }
-                    if ($event === Events\MutationKilled::class) {
+                    if ($event instanceof Events\MutationKilled) {
                         $this->scoreboard->score('killed');
                     }
-                    if ($event === Events\MutationEscaped::class) {
+                    if ($event instanceof Events\MutationEscaped) {
                         $this->scoreboard->score('escaped');
                     }
-                    if ($event === 'stop') {
+                    if ($event instanceof Events\FinishedApplication) {
                         $this->scoreboard->stop();
                     }
                 }

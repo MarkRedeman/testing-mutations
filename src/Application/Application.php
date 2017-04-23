@@ -25,8 +25,8 @@ final class Application
 
     public function run()
     {
-        // From context?
         $config = $this->context->config();
+
         $mutate = new MutateSourceCode(...$this->context->operators());
 
         $tester = new MutationTester(
@@ -42,48 +42,39 @@ final class Application
         // Instead of having an emitter here, we could have
         // decorated MutationTesters and MutateSourceCode classes
         // that do the emitting
-        $this->context->eventEmitter()->emit('start');
+        $this->context->eventEmitter()->emit(new Events\StartedApplication());
 
         // echo "Total files: " . count($files) . ".\n";
         foreach ($files as $name => $object) {
             $source = file_get_contents($name);
 
-            $relName = substr($name, strlen($config['project-path']));
-            echo "Mutating file: [${relName}]\n";
-
             $mutations = [];
             $mutate->mutate($source, function (Mutation $mutation, array $ast) use ($tester, $name, &$mutations) {
                 // Filter mutation
 
-                $this->emit(Events\MutationFound::class);
+                $this->emit(new Events\MutationFound($mutation));
                 // Mutation applied
                 $result = $tester->testMutation($mutation, $ast, $name);
 
                 if ($result->process->isSuccessful()) {
-                    $this->emit(Events\MutationEscaped::class);
-
-                    $m = $mutation->operator;
-                    echo "Escaped: [${m}]";
-                    echo "[" . $mutation->original()->getAttribute('startLine') .
-                        ", " . $mutation->original()->getAttribute('startLine') . "]";
-                    echo "\n";
-
+                    // $this->emit(Events\MutationEscaped::class);
+                    $this->emit(new Events\MutationEscaped($mutation));
                 } else {
-                    $this->emit(Events\MutationKilled::class);
+                    $this->emit(new Events\MutationKilled($mutation));
                 }
                 // echo $result->process->getOutput() . "\n";
 
                 // Mutation tested
-                $this->emit(Events\MutationTested::class);
+                $this->emit(new Events\MutationTested($mutation));
                 $mutations[] = $mutation;
             });
 
-
-            $emitter->emit(Events\MutationsOnFileWereCompleted::class);
-            echo "Tested " . count($mutations) . " mutations on [${relName}] \n";
+            $emitter->emit(new Events\MutationsOnFileWereCompleted(
+                substr($name, strlen($config['project-path']))
+            ));
         }
 
-        $this->emit('stop');
+        $this->emit(new Events\FinishedApplication());
 
         return;
     }

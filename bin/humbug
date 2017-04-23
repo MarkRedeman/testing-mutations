@@ -106,6 +106,7 @@
                         \Renamed\Application\Extensions\NyanCatProgressBar::class,
                         \Renamed\Application\Extensions\OutputStatistics::class,
                         \Renamed\Application\Extensions\MeassurePerformance::class,
+                        \Renamed\Application\Extensions\KeepTrackOfMutationsOnFile::class,
                     ]
                 ]
             )

@@ -31,10 +31,10 @@ final class MeassurePerformance implements Context
 
                 public function handle($event)
                 {
-                    if ($event === 'start') {
+                    if ($event instanceof Events\StartedApplication) {
                         $this->performance->start();
                     }
-                    if ($event === 'stop') {
+                    if ($event instanceof Events\FinishedApplication) {
                         $this->performance->stop();
                         echo 'Time: ' . $this->performance->formatTime() . "\n";
                         echo 'Memory: ' . $this->performance->formatMemoryUsage() . "\n";
